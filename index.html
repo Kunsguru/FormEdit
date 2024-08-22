@@ -86,11 +86,10 @@
         }
         
         .sn {
-        	display: flex;
-       
-        align: center;
-        margin: 0;
-        	}
+            display: flex;
+            align: center;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -98,13 +97,17 @@
         <h2>UNESCO CLUB OF UNIVERSITY OF ABUJA</h2>
         <h3>FEDERAL UNIVERSITY, ABUJA</h3>
         <div class="form-header">
-            <input type="file" id="profile-pic-input" accept="image/*" onchange="loadProfilePic(event)">
+            <img id="profile-pic" class="profile-pic" alt="Profile Picture">
             <div class="form-info">
                 <p><strong>Membership Form</strong></p>
                 <p class="SN">Serial Number: <strong id="serial-number-container"><span id="serial-number"></span></strong></p>
             </div>
         </div>
         <form id="membershipForm">
+            <div class="form-group">
+                <label for="profile-pic-input">Upload Profile Picture:</label>
+                <input type="file" id="profile-pic-input" name="profile-pic-input" accept="image/*" required onchange="loadProfilePic(event)">
+            </div>
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" required>
@@ -131,7 +134,7 @@
             </div>
             <div class="form-group">
                 <label for="serial-number">Serial-Number:</label>
-                <input type="text" id="serial-number" name="serial-number" required>
+                <input type="text" id="serial-number" name="serial-number" readonly>
             </div>
             <div class="form-group">
                 <label for="faculty">Faculty:</label>
@@ -175,6 +178,7 @@
         function generateSerialNumber() {
             const serialNumber = 'SN' + new Date().getTime();
             document.getElementById('serial-number').textContent = serialNumber;
+            document.getElementById('serial-number-input').value = serialNumber;
         }
 
         // Call the function to generate the serial number when the page loads
@@ -196,15 +200,24 @@
                 `Faculty: ${formData.get('faculty')}\n` +
                 `Department: ${formData.get('department')}\n` +
                 `Level: ${formData.get('level')}\n` +
-                `Signature: ${formData.get('signature')}\n` +
-                       `profile-pic-input: ${formData.get('profile-pic-input ')}\n` +
                 `Date: ${formData.get('date')}\n` +
                 `Undertaking: ${formData.get('undertaking')}\n`
             )}`;
 
+            // Add the profile picture and signature to the email as attachments
+            const profilePic = formData.get('profile-pic-input');
+            const signature = formData.get('signature');
 
+            if (profilePic && signature) {
+                const fileAttachments = [];
+                fileAttachments.push({ filename: 'Profile-Pic.jpg', content: profilePic });
+                fileAttachments.push({ filename: 'Signature.jpg', content: signature });
 
-            window.location.href = mailtoLink;
+                // Send the email with attachments using a mailto link
+                window.location.href = mailtoLink;
+            } else {
+                alert('Please upload both Profile Picture and Signature.');
+            }
         }
     </script>
 </body>
